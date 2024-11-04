@@ -1,0 +1,18 @@
+<launch>
+	<arg name="wifi" default="false"/>         <!-- connect to VICON via wifi network -->
+	<arg name="ip_wifi" default="192.168.0.188:801"/>
+	<arg name="ip_lan"  default="192.168.10.1:801"/> <!-- ground arena -->
+
+	<node pkg="vicon_bridge" type="vicon_bridge" name="vicon" output="screen">
+		<param name="stream_mode" value="ClientPull" type="str" />
+		<param name="tf_ref_frame_id" value="/world" type="str" />
+		<param name="broadcast_transform" value="false" type="bool" />
+		
+		<!-- make sure that IP and port reflects the one set in vicon/system IP:port -->
+		<param name="datastream_hostport" value="$(arg ip_wifi)" type="str" if="$(arg wifi)" />
+		<param name="datastream_hostport" value="$(arg ip_lan)"  type="str" unless="$(arg wifi)" />
+	</node>
+
+	<node pkg="tf" type="static_transform_publisher" name="vicon_offset" args="0 0 0 0 0 0 /map /world  100"/>
+
+</launch>
